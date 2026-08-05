@@ -89,3 +89,46 @@ high potential to low potential
 nmos can't charge to full $V_{dd}$ , but can discharge capacitor completely,
 pmost can't discharge completely, but can charge to $V_{dd}$ 
 
+electrons move from lower to higher potential coz they r -vely charged
+holes move from higher to lower potential coz they are +vely charged
+
+PMOS is active low,
+low gate voltage makes the gate relatively negative compared to source/body, this attracts holes at the surface forming a channel for holes to flow
+![[CMOS.png|350]]
+
+ when PMOS is on , charging
+ electrons flow from (drain) the $V_{dd}$ side of metal plate to (source) power supply $V_{dd}$.
+ thereby making this plate positive, and the other plate connected to ground is negative compared to this plate, this creates a electric field and stores electrical energy.
+
+when NMOS is on, discharging
+electrons flow from (source) ground to metal plate not connected to ground (drain) and this neutralizes the positive charges stored on this plate, thereby discharging the capacitor by removing the electric field.
+
+$E=\frac{1}{2}CV^2$,
+C is the capacitance that comes from physical structure.
+
+---
+
+potential difference between two points of charges in a semi-conductor
+$\frac{n_1}{n_2} = \epsilon^{\frac{\psi_{12}}{kT/q}}$ , maxwell-boltzmann law
+
+$\frac{kT}{q}$ , thermal voltage, voltage equivalent of thermal energy
+$kT$, thermal energy
+energy/charge $\frac{kT}{q}$ = voltage
+26mV at 300k
+
+high temperature -> large thermal voltage
+intrinsic carriers (without doping) increases with temperature
+
+
+drift velocity, $\nu_d = \mu E$ 
+$E=$ electric field
+$\mu=$ mobility
+
+in short-channel devices, source and drain are close. threshold voltage depends on drain-source voltage. DIBLowering.
+![[subtheshold_leakage.png]]
+
+$\mu_0$ -
+zero bias mobility, carrier mobility increases when there is low vertical electric field from the gate.
+$\nu_T$ -
+thermal voltage, proportional to temperature
+this is linear in temperature range 40c-80c.

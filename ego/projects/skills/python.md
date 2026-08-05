@@ -1,0 +1,1 @@
+`-m` run module as a script

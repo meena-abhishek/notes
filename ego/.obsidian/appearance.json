@@ -4,9 +4,9 @@
   "cssTheme": "AnuPpuccin",
   "showRibbon": false,
   "enabledCssSnippets": [
-    "Colored Sidebar Items",
     "custom-background",
-    "extended-colorschemes"
+    "extended-colorschemes",
+    "Colored Sidebar Items"
   ],
   "theme": "obsidian",
   "showViewHeader": false

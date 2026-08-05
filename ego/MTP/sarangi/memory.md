@@ -301,4 +301,12 @@ use power TSV to reduce power drop as we go up the stack.
 chip to wafer hybrid bonding (C2W HB) can stack more dies in a limit z-height by removing gap-fill material and effectively control heat dissipation.
 
 
+HBM uses large no. of pins, but they operate at much lower frequency and are very close to xpu.
+where as HMC uses small no. of pins but at higher frequency.
+because using large no. of pins at high frequency causes crosstalk, synchronization issues.
 
+all memory traffic fully resides in SiP. using advanced packaging technologies like silicon interposers enables data bus to be much wider and at a much lower per pin data rate. this consumes less power.
+
+within each channel, memory banks are further segmented into two half-banks, each utilizing 64 I/Os.
+in legacy, both halves of a bank output 64bits, yielding a total of 128 bits per access.
+pseudo-channel mode further divides the channel into two semi-independent sub-channels, each with 64 i/os.

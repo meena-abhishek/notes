@@ -1,0 +1,179 @@
+<style>
+  .week-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .week-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .week-badge { font-size: 12px; font-weight: 500; padding: 3px 10px; border-radius: var(--border-radius-md); white-space: nowrap; }
+  .week-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+  .week-goal { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 10px; line-height: 1.5; }
+  .task-list { list-style: none; padding: 0; margin: 0; }
+  .task-list li { font-size: 13px; color: var(--color-text-primary); padding: 4px 0; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+  .task-list li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--color-border-secondary); margin-top: 6px; flex-shrink: 0; }
+  .deliverable { margin-top: 10px; padding: 8px 12px; border-radius: var(--border-radius-md); font-size: 12px; font-weight: 500; }
+  .phase-label { font-size: 11px; font-weight: 500; letter-spacing: 0.05em; color: var(--color-text-tertiary); text-transform: uppercase; margin: 20px 0 8px; }
+  .ask-btn { font-size: 12px; color: var(--color-text-info); background: none; border: none; cursor: pointer; padding: 0; margin-top: 8px; }
+</style>
+
+<h2 class="sr-only">Week by week build plan for semantic code review assistant</h2>
+
+<div class="phase-label">Phase 1 — foundations</div>
+
+<div class="week-card">
+  <div class="week-header">
+    <span class="week-badge" style="background: var(--color-background-secondary); color: var(--color-text-secondary);">Week 1</span>
+    <span class="week-title">Understand the pieces, set up the environment</span>
+  </div>
+  <p class="week-goal">Goal: by end of week, you can embed a piece of code and retrieve similar code from a toy dataset. Nothing connected yet — just proof the core idea works.</p>
+  <ul class="task-list">
+    <li>Read Jay Alammar's illustrated BERT (understand what an embedding actually is)</li>
+    <li>Install: Python 3.11, Docker, Cursor, create a GitHub account + test repo</li>
+    <li>Run ChromaDB locally, embed 20 random sentences, query them — see what comes back</li>
+    <li>Load <code>microsoft/codebert-base</code> via sentence-transformers, embed 5 code snippets</li>
+    <li>Write a tiny script: given a code string, find the most similar from a list of 10 — print cosine similarity scores</li>
+    <li>Set up <code>DEVLOG.md</code> — write your first entry tonight</li>
+  </ul>
+  <div class="deliverable" style="background: var(--color-background-success); color: var(--color-text-success);">
+    End state: a Python script that takes a code snippet, embeds it with CodeBERT, queries ChromaDB, returns top 3 similar snippets with scores
+  </div>
+  <button class="ask-btn" onclick="sendPrompt('Give me the exact Python code to embed a code snippet with CodeBERT and query ChromaDB for similar results')">Ask Claude to help with Week 1 code ↗</button>
+</div>
+
+<div class="week-card">
+  <div class="week-header">
+    <span class="week-badge" style="background: var(--color-background-secondary); color: var(--color-text-secondary);">Week 2</span>
+    <span class="week-title">Build the ingestion pipeline</span>
+  </div>
+  <p class="week-goal">Goal: by end of week, ChromaDB is populated with real bugfix patterns from a real GitHub repo. The knowledge base exists.</p>
+  <ul class="task-list">
+    <li>Install PyGithub, get a GitHub personal access token</li>
+    <li>Write <code>fetcher.py</code>: fetch all closed PRs from a target repo (start with <code>psf/requests</code> — small, well-labelled)</li>
+    <li>Filter PRs: keep only those with "fix", "bug", "patch" in title or labels</li>
+    <li>Write <code>chunker.py</code>: parse raw diff strings, split by <code>@@</code> markers, extract removed lines + 5 lines of surrounding context</li>
+    <li>Handle rate limits: check <code>X-RateLimit-Remaining</code> header, sleep when needed — write this in DEVLOG</li>
+    <li>Write <code>embedder.py</code>: embed each hunk, store in ChromaDB with metadata (pr_number, pr_title, pr_url, fix_preview)</li>
+    <li>Also store raw PR data in PostgreSQL using psycopg2</li>
+    <li>Run it end to end — verify ChromaDB has 100+ entries</li>
+  </ul>
+  <div class="deliverable" style="background: var(--color-background-success); color: var(--color-text-success);">
+    End state: run <code>python ingest.py psf/requests</code> and ChromaDB fills up with real bugfix hunks. Query it manually and get back relevant results.
+  </div>
+  <button class="ask-btn" onclick="sendPrompt('Show me how to parse a GitHub PR diff string and split it into hunks by @@ markers in Python')">Ask Claude to help with chunker.py ↗</button>
+</div>
+
+<div class="phase-label">Phase 2 — online pipeline</div>
+
+<div class="week-card">
+  <div class="week-header">
+    <span class="week-badge" style="background: var(--color-background-info); color: var(--color-text-info);">Week 3</span>
+    <span class="week-title">Webhook + retrieval (hardest week)</span>
+  </div>
+  <p class="week-goal">Goal: by end of week, opening a PR on your test repo triggers your FastAPI server, retrieves similar bugfixes, and prints them to your terminal. No LLM yet — just raw retrieval working end to end.</p>
+  <ul class="task-list">
+    <li>Build <code>main.py</code> in FastAPI: one POST endpoint <code>/webhook</code> that receives GitHub events</li>
+    <li>Install ngrok, expose localhost:8000, register as GitHub webhook on your test repo</li>
+    <li>Parse the PR payload: extract the diff URL, fetch the actual diff, run it through your chunker</li>
+    <li>For each hunk: query ChromaDB, collect matches above similarity threshold (start with 0.75)</li>
+    <li>Print matches to terminal with PR number and similarity score — verify they make sense</li>
+    <li>Move processing to a FastAPI BackgroundTask so webhook responds in under 1 second</li>
+    <li>This week will break a lot — budget an extra day, write every failure in DEVLOG</li>
+  </ul>
+  <div class="deliverable" style="background: var(--color-background-info); color: var(--color-text-info);">
+    End state: open a PR on your test repo → terminal shows retrieved bugfix matches within 5 seconds
+  </div>
+  <button class="ask-btn" onclick="sendPrompt('How do I set up a FastAPI webhook endpoint that handles GitHub PR events with background tasks?')">Ask Claude to help with webhook setup ↗</button>
+</div>
+
+<div class="week-card">
+  <div class="week-header">
+    <span class="week-badge" style="background: var(--color-background-info); color: var(--color-text-info);">Week 4</span>
+    <span class="week-title">LLM review generation + GitHub comment</span>
+  </div>
+  <p class="week-goal">Goal: by end of week, a real comment appears on a real PR automatically. This is your first full end-to-end demo moment.</p>
+  <ul class="task-list">
+    <li>Install Ollama locally, pull Mistral — test it with a basic prompt (free, no API key)</li>
+    <li>Write <code>reviewer.py</code>: takes retrieved hunks, formats a prompt, calls Mistral, gets review text back</li>
+    <li>Prompt structure: new code + 3 similar past bugfixes + "explain the risk in 3 bullet points"</li>
+    <li>Write <code>commenter.py</code>: POST to GitHub API <code>/repos/{owner}/{repo}/pulls/{n}/reviews</code> with the review text</li>
+    <li>Wire everything together in <code>main.py</code>: webhook → chunk → retrieve → review → comment</li>
+    <li>Open a PR with obviously suspicious code — watch the comment appear</li>
+    <li>Tune: if comment is too verbose, tighten the prompt. If retrieval misses obvious things, lower threshold.</li>
+  </ul>
+  <div class="deliverable" style="background: var(--color-background-info); color: var(--color-text-info);">
+    End state: push a PR → automatic comment appears on GitHub with specific risk explanation and reference to past bugfix PR
+  </div>
+  <button class="ask-btn" onclick="sendPrompt('Write a prompt template for generating a code review comment from retrieved bugfix patterns')">Ask Claude to help with the review prompt ↗</button>
+</div>
+
+<div class="phase-label">Phase 3 — polish and deployment</div>
+
+<div class="week-card">
+  <div class="week-header">
+    <span class="week-badge" style="background: var(--color-background-secondary); color: var(--color-text-secondary);">Week 5</span>
+    <span class="week-title">Run on real repo + measure precision</span>
+  </div>
+  <p class="week-goal">Goal: system runs on a real open source repo with 6 months of history. You have a precision number you can cite in interviews.</p>
+  <ul class="task-list">
+    <li>Re-run ingestion on a larger repo: <code>fastapi/fastapi</code> or <code>django/django</code> (more bugfix PRs)</li>
+    <li>Handle edge cases that break: empty diffs, binary files, config-only changes — add file extension filter</li>
+    <li>Handle one-line hunks: expand context by fetching surrounding file lines via GitHub API</li>
+    <li>Manually evaluate precision: take 20 retrieval results, check if they are genuinely relevant — write down your number</li>
+    <li>Adjust similarity threshold based on what you find — document the before/after in DEVLOG</li>
+    <li>Test edge cases: PR with 0 code changes, PR with 50 hunks, PR in a non-Python file</li>
+  </ul>
+  <div class="deliverable" style="background: var(--color-background-success); color: var(--color-text-success);">
+    End state: system ingested a real repo, retrieval precision measured and documented, edge cases handled
+  </div>
+  <button class="ask-btn" onclick="sendPrompt('How do I measure retrieval precision for a RAG system manually with 20 test cases?')">Ask Claude about measuring precision ↗</button>
+</div>
+
+<div class="week-card">
+  <div class="week-header">
+    <span class="week-badge" style="background: var(--color-background-secondary); color: var(--color-text-secondary);">Week 6</span>
+    <span class="week-title">Docker, deploy, README, demo video</span>
+  </div>
+  <p class="week-goal">Goal: anyone can run your project with one command. It is live on the internet. You have a 3-minute demo video recorded.</p>
+  <ul class="task-list">
+    <li>Write <code>docker-compose.yml</code>: three services — FastAPI app, PostgreSQL, ChromaDB</li>
+    <li>Test: <code>docker-compose up</code> from scratch on a clean folder — fix everything that breaks</li>
+    <li>Deploy FastAPI to Railway (free tier) — point GitHub webhook to the live URL, not ngrok</li>
+    <li>Draw architecture diagram in Excalidraw — save as PNG, add to repo</li>
+    <li>Write README: problem → architecture → design decisions → how to run → example output</li>
+    <li>Record Loom demo (3 min): show the repo, push a PR live, watch comment appear, explain what happened</li>
+    <li>Add demo video link to README and to your resume</li>
+  </ul>
+  <div class="deliverable" style="background: var(--color-background-success); color: var(--color-text-success);">
+    End state: public GitHub repo, live deployed system, 3-min Loom demo, clean README with architecture diagram
+  </div>
+  <button class="ask-btn" onclick="sendPrompt('Write a docker-compose.yml for FastAPI + PostgreSQL + ChromaDB with proper networking')">Ask Claude for Docker Compose help ↗</button>
+</div>
+
+<div class="week-card">
+  <div class="week-header">
+    <span class="week-badge" style="background: var(--color-background-warning); color: var(--color-text-warning);">Week 7 (buffer)</span>
+    <span class="week-title">Interview prep — explain every decision out loud</span>
+  </div>
+  <p class="week-goal">Goal: you can talk about this project for 30 minutes without notes. Every design decision has a reason you can state clearly.</p>
+  <ul class="task-list">
+    <li>Write answers to all 8 interview questions (listed below) — then say them out loud, not just read them</li>
+    <li>Do 2 mock interviews on Pramp where you explain only this project</li>
+    <li>Apply to all 8 roles if not done already — deadline check on all of them</li>
+    <li>Update resume: add project with 3 bullet points (what it does, stack, one measurable result like precision %)</li>
+    <li>Fix anything in the project that you cannot explain — if you don't understand why a line of code exists, rewrite it until you do</li>
+  </ul>
+  <div class="deliverable" style="background: var(--color-background-warning); color: var(--color-text-warning);">
+    End state: you can answer "walk me through your project" cold, in under 2 minutes, clearly
+  </div>
+  <button class="ask-btn" onclick="sendPrompt('Give me 10 tough interview questions about the semantic code review assistant project and tell me what a good answer looks like')">Get interview questions for this project ↗</button>
+</div>
+
+<div style="margin-top: 20px; padding: 12px 16px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary);">
+  <p style="font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 6px;">The 8 interview questions to prepare</p>
+  <ol style="font-size: 12px; color: var(--color-text-secondary); margin: 0; padding-left: 16px; line-height: 2;">
+    <li>Walk me through your architecture</li>
+    <li>Why CodeBERT over regular BERT or text-embedding-ada?</li>
+    <li>Why hunk-level chunking? Why not file-level?</li>
+    <li>Why not just use SonarQube or GitHub Copilot?</li>
+    <li>What was the hardest bug you hit?</li>
+    <li>How did you measure retrieval quality?</li>
+    <li>What breaks at 100x scale?</li>
+    <li>What would you do differently with 3 more months?</li>
+  </ol>
+</div>

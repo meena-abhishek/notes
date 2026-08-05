@@ -12,3 +12,7 @@ custom comparator `comp(p1,p2)`, return true if they are in correct order i.e $p
 `*max_element(a,a+n)`
 
 for longest consecutive sum, try to take sum of the left most (shortest) sub array as $sum-k$ , in case of zero's, don't update the sum index in hashmap if already exist.
+
+
+https://leetcode.com/problems/number-of-ways-to-assign-edge-weights-ii/description/?envType=daily-question&envId=2026-06-12
+https://chatgpt.com/share/6a2b907d-7760-83e9-b370-d736580413f1

@@ -84,3 +84,20 @@ many i/o devices write directly to memory, in case of write-back we need to chec
 
 on DMA request.
 invalidate cache lines if not dirty, if dirty, write-back and then invalidate
+
+###### incl_vs_excl_cache
+*inclusive cache*
+if a cache line exists in L1/L2, it must also exist in L2/L3.
+lower levels are superset of upper levels.
+
+if L2 evicts A, then only L1 needs to evict A, L3 does not need to invalidate.
+
+*exclusive cache*
+a cache line exists in only one cache level.
+
+*non-inclusive cache*
+there is no rule requiring duplication or exclusion.
+the same line may or may not exist at multiple levels.
+
+the hardware decides dynamically based on replacement policies, coherence, and performance.
+

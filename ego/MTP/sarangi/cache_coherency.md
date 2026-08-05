@@ -53,3 +53,4 @@ if local memory doesn't have data, then other cores memory controller sends data
 ---
 
 on a read miss, cache need to get control of the bus.
+

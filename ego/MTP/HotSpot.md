@@ -1,76 +1,43 @@
 designing cooling solutions for worst-case power dissipation is expensive.
-chips that can autonomously modify their execution and power dissipation characteristics permit the use of lower-cost cooling solutions while still guaranteeing safe temperature regulation.
+chips that can autonomously modify their execution and power-dissipation characteristics permit the use of lower-cost cooling solutions while still guaranteeing safe temperature regulation.
 
-resistance, $R = \frac{\rho\cdot l}{A}$ 
+evaluation techniques for this dynamic thermal management (DTM) 
+requires a thermal model.
 
-current, charge passing per unit time, $I = \frac{q}{t}$ 
+*HotSpot* , a model based on equivalent circuit of thermal resistances and capacitances.
 
-charge creates electric field. 
-proton, electron create same electric field but different directions.
+Finite Element simulation, 
+is a numerical method used to approximate solutions to complex physical problems by splitting a large system into small elements.
 
-power metrics are poor predictors of temperature, sensor imprecision has a substantial impact on the performance of DTM.
+power density, 
+amount of power generated, consumed, dissipated per unit area or volume.
+because of small transistors, high frequency, more transistors packed in same area. power density $P/A$ is increasing rapidly and so is the cooling cost.
 
-temperature depends on how heat flows and accumulates, not just how much is generated.
-even if power spikes briefly, temperature may barely change because heat hasn't accumulated yet.
+localized heating occurs much faster than chip-wide heating.
+since power dissipation is spatially nonuniform across the chip, this leads to "hot spots", this can cause timing errors of physical damage.
 
-heat flows to neighbouring regions and layers. a units temperature depends on its own power, neighbor's power, past history
+many low-power techniques have little or no effect on operating temperature, because they do not reduce power density in hotspots or because they only reclaim slack and do not reduce power and temperature when no slack is present.
 
-power is local, temperature is coupled
+DTM allows the thermal package to be designed for power densities exhibited by typical applications, with the chip itself adapting if temperatures approaches dangerous levels.
 
-leakage power increases with temperature (feedback loop), material properties changes with temperature
+carrier mobility is inversely proportional to temperature.
 
-thermal diffusion, heat spreading from hotter to colder regions
+register files, execution units, load-store queues are generally more hot than caches.
 
-low lateral thermal resistance -> heat flows easily from neighbors -> strong interaction between blocks
+thermal behavior is diffusive, not inductive
 
-high lateral thermal resistance -> heat stays localized -> weaker interaction
+we can replace a thermal problem with an analogous electrical problem, and then we can use traditional circuit simulators to find the voltages and currents at different places.
+these values can then be mapped to temperature and power values.
 
-localized heating occurs much faster than chip-wide heating, since power dissipation is spatially non-uniform across the chip, this leads to hot spots and spatial gradients that can cause timing errors or physical damage.
+temperature -> voltage
+power -> current
 
-a package designed for the worst case is excessive.
+![[electric-thermal.png|400]]
 
-the response by the chip provides the additional cooling and worst-case protection that is needed for reliability.
+the power density is increasing, and transistors are getting smaller and more unrealiable. in addition, because of process variations (variation in transistor dimensions caused due to imperfections in the fabrication process), the leakage power tends to vary across the chip, and thus it is possible to have some areas of chip where the leakage power is very high. because of this probability of forming temperature hotspots is also elevated.
 
-designing the thermal package for the "worst typical" application rather than the true worst case and using DTM permits reduction in *thermal design power (TDP)*.
-for application that do engage DTM, some performance loss may be incurred, because reducing temperature typically entails reducing power density, which in turn typically entails slower execution.
-but per-chip savings can be as high as hundreds of dollars.
+circuits consume power when there is a transition in the voltage levels (0->1 or 1->0). upon a transition there is a flow of current to charge or discharge gate capacitances and the resulting resistive loss is known as dynamic power consumption.
 
-improving DTM desing will allow greater cost savings with minimal performance cost.
+power per unit area (heat flux) is proportional to the gradient of the temperature.
 
-TDP - cooling system is designed to handle at least this much heat.
-
-if we assume worst-case program, then TDP will be high and need expensive cooling system.
-
-clock gating, turn off clock to unused blocks
-
-*using equivalent RC circuit*
-
-heat flow -> current
-temperature difference -> voltage
-
-thermal capacitance, to capture the time required for a mass to change temperature.
-
-capacitors stores energy in the form of electrostatic charges.
-electric force between these charges keeps them together.
-
-current and heat flow are described by exactly the same differential equations for a potential difference.
-these equivalent circuits are known as compact models.
-
-in microarchitectural unit, heat conduction to the thermal package and to neighbouring units are the dominant mechanisms that determine temperature.
-
-each unit on the chip is modeled as a heat (power) dissipator; each underlying region of silicon is modeled as part of the RC circuit, with several RC elements representing lateral and thermal heat flow.
-package and convection contributes additional RC elements.
-
-the model is a simple library that provides an interface for specifying some basic information about the package and for specifying any floorplan of any desired granularity. HotSpot then generates the equivalent RC circuit automatically, and, supplied with power dissipations over any chosen time step, computes temperatures at the center of each block of interest.
-
-floorplan - how chip blocks are arranged.
-
-the equivalent circuit is designed to have a direct and intuitive correspondance to the physical structure of a chip and its thermal package.
-the RC model therefore consists of three vertical conductive layers of die, heat spreader and heat sink and a fourth vertical, convective layer for the sink-to-air interface.
-
-each layer consists of a vertical RC pair from the center of each block down to the next layer and a lateral RC pair from the center of each block to the center of each edge.
-
-![[hotspot_rc.png|500]]
-
-thinning adds to the cost of production but reduces localized hotspots by reducing the amount of relatively higher-resistance silicon and getting heat-generating areas closer to the higher-conductivity metal package.
-
+heat flow can be described as "current" passing through a thermal resistance, leading to temperature difference analogous to a "voltage".
