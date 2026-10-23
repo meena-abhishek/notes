@@ -207,3 +207,68 @@ In a Moore machine, output is a function of the present state only, and it's "av
 |Dataflow|Boolean equations|`assign y = a & b;`|
 |Gate-level|Individual logic gates|`and`, `or`, `not`, `nand`|
 |Switch-level|Transistors|`nmos`, `pmos`|
+
+CMOS is based on **complementary pull-up and pull-down networks**. The pull-down network determines **when the output should be 0**, and the pull-up network is its dual (obtained by swapping series ↔ parallel and NMOS ↔ PMOS).
+- **NMOS transistors are in parallel.** If either input is 1, there's a path to ground.
+- **PMOS transistors are in series.** Both inputs must be 0 to create a path to VDD.
+
+- **`wire`** → must be driven continuously (`assign` or module output).
+- **`reg`** → assigned inside an `always` or `initial` block.
+
+`assign sum = a ^ b ^ cin;
+`assign cout = (a & b) | (cin & (a ^ b));`
+
+So, **yes**, subtraction generates a carry-out internally when implemented with an adder, but for subtraction that bit is interpreted as the **inverse of the borrow**. This is how processors like x86, ARM, and many others implement subtraction in their ALUs.
+
+$A−B=A+(∼B+1)$
+
+For **unsigned subtraction**:
+- `carry = 1` → **No borrow** was needed.
+- `carry = 0` → **A borrow** occurred.
+
+
+So `` `timescale 1ns/1ps `` means:
+
+- Delays are specified in nanoseconds by default.
+- The simulator internally tracks time down to 1 picosecond resolution, so fractional delays like `#2.5` (2.5 ns) can be represented accurately (2500 ps) rather than being rounded off.
+
+
+`clk_in` is your **physical, real clock input** — the actual signal coming from the board's oscillator into the FPGA pin. Your divider logic (a counter/flip-flops) is _driven by_ `clk_in` in the fabric. So:
+
+- `set_property PACKAGE_PIN E3 ...` — still needed, because `clk_in` still physically connects to pin E3.
+- `create_clock ... [get_ports {clk_in}]` — still needed, because Vivado must know the timing of the **actual clock entering the chip** to analyze the divider logic itself (the flip-flops in your counter are clocked by `clk_in`, not by the divided signal).
+
+So `-period 10.00` tells Vivado: _"one full clock cycle (rising edge to next rising edge) takes 10 ns"_ — which corresponds to a 100 MHz clock. This matches the onboard 100 MHz oscillator on boards like the Basys3.
+
+A one-hot mux is a multiplexer built around a one-hot select signal instead of a binary-encoded one. Let me break down what that means and why it's designed this way.
+
+**Regular mux vs one-hot mux**
+
+A standard mux takes a binary-encoded select line. For 4 inputs, you'd use a 2-bit select (00, 01, 10, 11) and internally decode that into 4 individual enable signals before picking an input.
+
+A one-hot mux skips the decoding step. Instead, the select signal itself is already "one-hot" — a vector where exactly one bit is 1 and all others are 0. For 4 inputs, the select is 4 bits wide: `0001`, `0010`, `0100`, or `1000`, directly indicating which input to choose.
+
+**How it's built**
+
+Each bit of the one-hot select directly gates its corresponding input, typically with an AND gate, and then all the gated outputs get OR'd (or wire-OR'd) together:
+
+```
+out = (sel[0] & in[0]) | (sel[1] & in[1]) | (sel[2] & in[2]) | (sel[3] & in[3])
+```
+
+Since only one `sel` bit is high at a time, only one term contributes to the OR — the rest are zeroed out. So the structure is just:
+
+- N AND gates (one per input, width = data width)
+- One big OR (or OR-tree) combining all of them
+
+**Why use one-hot instead of binary-encoded**
+
+1. **Speed** — no decoder needed, and the AND/OR structure is very shallow (just 2 logic levels), so it's fast, which matters in high-performance datapaths like CPU pipelines.
+2. **Natural fit with one-hot state** — in many hardware designs, the "selector" already exists in one-hot form. A classic example: instruction decoders or arbiters where each bit represents "this particular source/opcode is active." If you already have a one-hot signal, feeding it straight into a one-hot mux avoids an encode/decode round-trip.
+3. **Scales well for wide muxes** — for a mux with many inputs, one-hot avoids the propagation delay of a binary decoder tree, at the cost of using more select bits (N bits for N inputs, instead of log2(N)).
+
+**Trade-off**
+
+The cost is select-line width: an N-input one-hot mux needs N select bits versus log2(N) for a binary mux. That's more wiring/area, but the gain in speed and simplicity (especially when paired with a system that's already producing one-hot signals, like a priority encoder or an arbiter) often makes it worthwhile in performance-critical hardware.
+
+If it'd help, I can sketch this out as a small circuit diagram or write the Verilog/VHDL for a 4-input one-hot mux.

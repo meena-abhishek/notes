@@ -59,6 +59,10 @@ here `w e $ b 0` are the motions.
 
 `:%s/old/new/gc` - ask for substitution
 
+`:s/\cold/new/gc` - ignore case
+
+`:s/\Cold/new/gc` - match exact case
+
 `:!` - execute external command
 
 `:w filename` - save a file

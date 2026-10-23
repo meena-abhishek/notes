@@ -90,5 +90,3 @@ When calculating or simulating static current, you must strictly define three va
     
 - **Process Corner:** Fast process corners (where transistors have shorter channel lengths or lower $V_{\text{th}}$) will exhibit significantly higher static current than Typical or Slow corners.
     
-
-Are you looking to calculate this for an academic device-physics problem, or are you trying to estimate power bounds for an ASIC/VLSI design?

@@ -293,13 +293,160 @@
           }
         }
       }
+    },
+    "sdf": {
+      "settings": {
+        "codeblock": {
+          "lineNumbers": true,
+          "unwrapLines": true,
+          "wrapLinesActive": false,
+          "curvature": 4
+        },
+        "gutter": {
+          "highlight": true,
+          "activeLine": false
+        },
+        "header": {
+          "title": {
+            "textFont": "",
+            "textBold": false,
+            "textItalic": true
+          },
+          "languageTag": {
+            "display": "none",
+            "textFont": "",
+            "textBold": true,
+            "textItalic": false
+          },
+          "languageIcon": {
+            "display": "none",
+            "displayColour": true
+          },
+          "externalReference": {
+            "displayRepository": true,
+            "displayVersion": true,
+            "displayTimestamp": true
+          },
+          "fontSize": 14,
+          "foldPlaceholder": ""
+        },
+        "highlights": {
+          "activeCodeblockLine": false,
+          "activeEditorLine": false
+        },
+        "inline": {
+          "syntaxHighlight": true,
+          "style": true,
+          "fontWeight": 4,
+          "curvature": 6,
+          "paddingVertical": 5,
+          "paddingHorizontal": 5,
+          "marginHorizontal": 0,
+          "titleFontWeight": 8
+        },
+        "advanced": {
+          "gradientHighlights": false,
+          "gradientHighlightsColourStop": "70%",
+          "languageBorderColour": false,
+          "languageBorderWidth": 5,
+          "iconSize": 28
+        }
+      },
+      "colours": {
+        "light": {
+          "codeblock": {
+            "backgroundColour": "--code-background",
+            "textColour": "--code-normal"
+          },
+          "gutter": {
+            "backgroundColour": "--code-background",
+            "textColour": "--text-faint",
+            "activeTextColour": "--text-muted"
+          },
+          "header": {
+            "backgroundColour": "--code-background",
+            "title": {
+              "textColour": "--code-comment"
+            },
+            "languageTag": {
+              "backgroundColour": "--code-background",
+              "textColour": "--code-comment"
+            },
+            "externalReference": {
+              "displayRepositoryColour": "#00FFFF",
+              "displayVersionColour": "#FF00FF",
+              "displayTimestampColour": "#808080"
+            },
+            "lineColour": "--color-base-30"
+          },
+          "highlights": {
+            "activeCodeblockLineColour": "--color-base-30",
+            "activeEditorLineColour": "--color-base-20",
+            "defaultColour": "--text-highlight-bg",
+            "alternativeHighlights": {}
+          },
+          "inline": {
+            "backgroundColour": "--code-background",
+            "textColour": "--code-normal",
+            "activeTextColour": "--code-normal",
+            "titleTextColour": "--code-comment"
+          },
+          "advanced": {
+            "buttonColour": "--text-muted",
+            "buttonActiveColour": "--text-normal"
+          }
+        },
+        "dark": {
+          "codeblock": {
+            "backgroundColour": "--code-background",
+            "textColour": "--code-normal"
+          },
+          "gutter": {
+            "backgroundColour": "--code-background",
+            "textColour": "--text-faint",
+            "activeTextColour": "--text-muted"
+          },
+          "header": {
+            "backgroundColour": "--code-background",
+            "title": {
+              "textColour": "--code-comment"
+            },
+            "languageTag": {
+              "backgroundColour": "--code-background",
+              "textColour": "--code-comment"
+            },
+            "externalReference": {
+              "displayRepositoryColour": "#00FFFF",
+              "displayVersionColour": "#FF00FF",
+              "displayTimestampColour": "#808080"
+            },
+            "lineColour": "--color-base-30"
+          },
+          "highlights": {
+            "activeCodeblockLineColour": "--color-base-30",
+            "activeEditorLineColour": "--color-base-20",
+            "defaultColour": "--text-highlight-bg",
+            "alternativeHighlights": {}
+          },
+          "inline": {
+            "backgroundColour": "--code-background",
+            "textColour": "--code-normal",
+            "activeTextColour": "--code-normal",
+            "titleTextColour": "--code-comment"
+          },
+          "advanced": {
+            "buttonColour": "--text-muted",
+            "buttonActiveColour": "--text-normal"
+          }
+        }
+      }
     }
   },
-  "selectedTheme": "Default",
+  "selectedTheme": "sdf",
   "currentTheme": {
     "settings": {
       "codeblock": {
-        "lineNumbers": false,
+        "lineNumbers": true,
         "unwrapLines": true,
         "wrapLinesActive": false,
         "curvature": 4
@@ -333,7 +480,7 @@
         "foldPlaceholder": ""
       },
       "highlights": {
-        "activeCodeblockLine": true,
+        "activeCodeblockLine": false,
         "activeEditorLine": false
       },
       "inline": {
@@ -347,7 +494,7 @@
         "titleFontWeight": 8
       },
       "advanced": {
-        "gradientHighlights": true,
+        "gradientHighlights": false,
         "gradientHighlightsColourStop": "70%",
         "languageBorderColour": false,
         "languageBorderWidth": 5,
@@ -389,7 +536,7 @@
         },
         "inline": {
           "backgroundColour": "--code-background",
-          "textColour": "#FFAC66",
+          "textColour": "--code-normal",
           "activeTextColour": "--code-normal",
           "titleTextColour": "--code-comment"
         },
@@ -432,7 +579,7 @@
         },
         "inline": {
           "backgroundColour": "--code-background",
-          "textColour": "#FA79C2",
+          "textColour": "--code-normal",
           "activeTextColour": "--code-normal",
           "titleTextColour": "--code-comment"
         },
